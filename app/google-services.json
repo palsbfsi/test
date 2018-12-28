@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "170921023051",
+    "firebase_url": "https://agegenderestimation-249c0.firebaseio.com",
+    "project_id": "agegenderestimation-249c0",
+    "storage_bucket": "agegenderestimation-249c0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170921023051:android:722485f0aa476a24",
+        "android_client_info": {
+          "package_name": "com.kaustez.agegenderestimation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "170921023051-a7h5sia873qpqvr22hcsv6mcidtdmsbb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN1rkDPD369NGLkI-axfSX7vadliYJ560"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
