@@ -120,7 +120,19 @@ public class FaceRecognitionProcessor {
 		for (FirebaseVisionFace result : results) {
 			// crop face bitmap
 			Rect rect = result.getBoundingBox();
-			// TODO: fix issues when rect is not fully within image
+			if(rect.left + rect.width() >= bitmap.getWidth()) {
+				rect.right = bitmap.getWidth();
+			}
+			if(rect.top + rect.height() >= bitmap.getHeight()) {
+				rect.bottom = bitmap.getHeight();
+			}
+			if(rect.top < 0) {
+				rect.top = 0;
+			}
+			if(rect.left < 0) {
+				rect.left = 0;
+			}
+
 			Bitmap resultBmp = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height());
 			// process bitmap here
 			Bitmap scaledBitmap = Bitmap.createScaledBitmap(resultBmp, 64, 64, false);

@@ -7,7 +7,6 @@ import android.util.Log;
 import com.ajeetkumar.textdetectionusingmlkit.camera.CameraSource;
 import com.ajeetkumar.textdetectionusingmlkit.camera.CameraSourcePreview;
 import com.ajeetkumar.textdetectionusingmlkit.others.GraphicOverlay;
-import com.ajeetkumar.textdetectionusingmlkit.text_detection.TextRecognitionProcessor;
 import com.ajeetkumar.textdetectionusingmlkit.face_detection.FaceRecognitionProcessor;
 
 import com.google.firebase.FirebaseApp;

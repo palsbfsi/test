@@ -32,7 +32,6 @@ import android.view.WindowManager;
 import com.ajeetkumar.textdetectionusingmlkit.face_detection.FaceRecognitionProcessor;
 import com.ajeetkumar.textdetectionusingmlkit.others.FrameMetadata;
 import com.ajeetkumar.textdetectionusingmlkit.others.GraphicOverlay;
-import com.ajeetkumar.textdetectionusingmlkit.text_detection.TextRecognitionProcessor;
 import com.google.android.gms.common.images.Size;
 
 import java.io.IOException;
