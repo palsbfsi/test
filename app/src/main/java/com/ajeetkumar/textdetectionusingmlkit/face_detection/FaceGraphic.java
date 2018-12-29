@@ -41,19 +41,21 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
   private final String gender;
   private final float age;
   private static final float TEXT_SIZE = 40.0f;
+  private boolean frontFacingCamera;
 
   private DecimalFormat df;
 
-  FaceGraphic(GraphicOverlay overlay, FirebaseVisionFace face, Bitmap bitmap, String gender, float age) {
+  FaceGraphic(GraphicOverlay overlay, FirebaseVisionFace face, Bitmap bitmap, String gender, float age, boolean frontFacingCamera) {
     super(overlay);
 
-    df = new DecimalFormat("#.##"); // 2 decimal places
+    df = new DecimalFormat("#.#"); // 1 decimal place
     df.setRoundingMode(RoundingMode.CEILING);
 
     this.gender = gender;
     this.bitmap = bitmap;
     this.face = face;
     this.age = age;
+    this.frontFacingCamera = frontFacingCamera;
 
     rectPaint = new Paint();
     rectPaint.setColor(FACE_COLOR);
@@ -76,7 +78,7 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
       throw new IllegalStateException("Attempting to draw a null face.");
     }
 
-    // Draws the bounding box around the TextBlock.
+    // Draws the bounding box around the face.
     RectF rect = new RectF(face.getBoundingBox());
     rect.left = translateX(rect.left);
     rect.top = translateY(rect.top);
@@ -87,7 +89,11 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
     // For debugging
     // canvas.drawBitmap(this.bitmap, this.bitmap.getScaledWidth(canvas), this.bitmap.getScaledHeight(canvas), rectPaint);
 
-    canvas.drawText(gender, rect.left + rect.width()/4,              rect.top + rect.height()/4, textPaint);
-    canvas.drawText(df.format(age), rect.left + rect.width()/4, rect.bottom - rect.height()/4, textPaint);
+    if(frontFacingCamera) {
+      canvas.drawText(df.format(age) + " " + gender, rect.right, rect.top, textPaint);
+    } else {
+      canvas.drawText(df.format(age) + " " + gender, rect.left, rect.top, textPaint);
+    }
+
   }
 }

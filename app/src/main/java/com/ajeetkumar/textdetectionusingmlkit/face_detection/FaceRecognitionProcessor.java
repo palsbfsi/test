@@ -62,7 +62,7 @@ public class FaceRecognitionProcessor {
 	private TensorFlowInferenceInterface ageInferenceInterface;
 	private float[] floatValues = new float[64 * 64 * 3];
 	private int[] intValues = new int[64*64];
-
+	private boolean frontFacingCamera;
 	String detectedGender = "N/A";
 	float detectedAge = -1;
 
@@ -70,9 +70,10 @@ public class FaceRecognitionProcessor {
 	// the model can handle.
 	private final AtomicBoolean shouldThrottle = new AtomicBoolean(false);
 
-	public FaceRecognitionProcessor(AssetManager assetManager) {
+	public FaceRecognitionProcessor(AssetManager assetManager, boolean frontFacingCamera) {
 		this.genderIinferenceInterface = new TensorFlowInferenceInterface(assetManager, "gender_model.pb");
 		this.ageInferenceInterface = new TensorFlowInferenceInterface(assetManager, "age_model.pb");
+		this.frontFacingCamera = frontFacingCamera;
 
 		detector = FirebaseVision.getInstance().getVisionFaceDetector();
 	}
@@ -160,7 +161,7 @@ public class FaceRecognitionProcessor {
 			// Copy the output Tensor back into the output array.
 			genderIinferenceInterface.fetch(outputName, outputs);
 
-			if(outputs[0] < 0.5) {
+			if(outputs[0] <= 0.55) {
 				detectedGender = "female";
 			} else {
 				detectedGender = "male";
@@ -185,7 +186,7 @@ public class FaceRecognitionProcessor {
 			detectedAge = outputs[0];
 
 			// add graphic overlay
-			GraphicOverlay.Graphic faceGraphic = new FaceGraphic(graphicOverlay, result, scaledBitmap, detectedGender, detectedAge);
+			GraphicOverlay.Graphic faceGraphic = new FaceGraphic(graphicOverlay, result, scaledBitmap, detectedGender, detectedAge, frontFacingCamera);
 			graphicOverlay.add(faceGraphic);
 		}
 	}
