@@ -121,6 +121,17 @@ public class FaceRecognitionProcessor {
 		for (FirebaseVisionFace result : results) {
 			// crop face bitmap
 			Rect rect = result.getBoundingBox();
+
+//			// Crop even more off (the api returns a bounding box that encompasses more than just face)
+//			int dw = rect.width()/12;
+//			int dh = rect.height()/12;
+//
+//			rect.left = rect.left + dw;
+//			rect.right = rect.right - dw;
+//
+//			rect.top = rect.top + dh;
+//			rect.bottom = rect.bottom - dh;
+
 			if(rect.left + rect.width() >= bitmap.getWidth()) {
 				rect.right = bitmap.getWidth();
 			}
@@ -162,9 +173,9 @@ public class FaceRecognitionProcessor {
 			genderIinferenceInterface.fetch(outputName, outputs);
 
 			if(outputs[0] <= 0.55) {
-				detectedGender = "female";
+				detectedGender = "F";
 			} else {
-				detectedGender = "male";
+				detectedGender = "M";
 			}
 
 			/*** Run Age Detection Model ***/

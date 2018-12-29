@@ -48,7 +48,7 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
   FaceGraphic(GraphicOverlay overlay, FirebaseVisionFace face, Bitmap bitmap, String gender, float age, boolean frontFacingCamera) {
     super(overlay);
 
-    df = new DecimalFormat("#.#"); // 1 decimal place
+    df = new DecimalFormat("#."); // 1 decimal place
     df.setRoundingMode(RoundingMode.CEILING);
 
     this.gender = gender;
@@ -94,6 +94,5 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
     } else {
       canvas.drawText(df.format(age) + " " + gender, rect.left, rect.top, textPaint);
     }
-
   }
 }
