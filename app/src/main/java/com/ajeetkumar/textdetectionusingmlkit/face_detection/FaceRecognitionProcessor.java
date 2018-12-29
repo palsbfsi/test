@@ -66,6 +66,7 @@ public class FaceRecognitionProcessor {
 	String detectedGender = "N/A";
 	float detectedAge = -1;
 
+
 	// Whether we should ignore process(). This is usually caused by feeding input data faster than
 	// the model can handle.
 	private final AtomicBoolean shouldThrottle = new AtomicBoolean(false);
@@ -152,9 +153,9 @@ public class FaceRecognitionProcessor {
 			scaledBitmap.getPixels(intValues, 0, scaledBitmap.getWidth(), 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight());
 			for (int i = 0; i < intValues.length; ++i) {
 				final int val = intValues[i];
-				floatValues[i * 3 + 0] = (((val >> 16) & 0xFF));
+				floatValues[i * 3 + 2] = (((val >> 16) & 0xFF));
 				floatValues[i * 3 + 1] = (((val >> 8) & 0xFF));
-				floatValues[i * 3 + 2] = ((val & 0xFF));
+				floatValues[i * 3 + 0] = ((val & 0xFF));
 			}
 
 			float[] outputs = new float[1];
@@ -172,7 +173,7 @@ public class FaceRecognitionProcessor {
 			// Copy the output Tensor back into the output array.
 			genderIinferenceInterface.fetch(outputName, outputs);
 
-			if(outputs[0] <= 0.55) {
+			if(outputs[0] <= 0.62) {
 				detectedGender = "F";
 			} else {
 				detectedGender = "M";
