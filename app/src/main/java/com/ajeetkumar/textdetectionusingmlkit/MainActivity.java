@@ -10,6 +10,8 @@ import com.ajeetkumar.textdetectionusingmlkit.others.GraphicOverlay;
 import com.ajeetkumar.textdetectionusingmlkit.face_detection.FaceRecognitionProcessor;
 
 import com.google.firebase.FirebaseApp;
+import android.support.design.widget.FloatingActionButton;
+import android.view.View;
 
 import java.io.IOException;
 
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 	private CameraSource cameraSource = null;
 	private CameraSourcePreview preview;
 	private GraphicOverlay graphicOverlay;
-
+	private FloatingActionButton fab;
 	private static String TAG = MainActivity.class.getSimpleName().toString().trim();
 
 	//endregion
@@ -30,7 +32,16 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		//FirebaseApp.initializeApp(this);
+		fab = (FloatingActionButton)findViewById(R.id.fab);
+
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Log.d(TAG, "CLICK");
+				flipCameraSource();
+			}
+		});
+
 
 		preview = (CameraSourcePreview) findViewById(R.id.camera_source_preview);
 		if (preview == null) {
@@ -68,13 +79,26 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void createCameraSource() {
+		createCameraSource(false);
+	}
 
-		if (cameraSource == null) {
-			cameraSource = new CameraSource(this, graphicOverlay);
-			cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
+	private void createCameraSource(boolean frontFacingCamera) {
+
+		if (cameraSource != null) {
+			onPause();
+			cameraSource.release();
 		}
 
+		cameraSource = new CameraSource(this, graphicOverlay);
+		cameraSource.setFacing(frontFacingCamera ? CameraSource.CAMERA_FACING_FRONT : CameraSource.CAMERA_FACING_BACK);
+
 		cameraSource.setMachineLearningFrameProcessor(new FaceRecognitionProcessor(getAssets()));
+	}
+
+	private void flipCameraSource() {
+		Log.d(TAG, "updating facing");
+		createCameraSource(cameraSource.getCameraFacing() != CameraSource.CAMERA_FACING_FRONT);
+		startCameraSource();
 	}
 
 	private void startCameraSource() {

@@ -20,6 +20,8 @@ import android.graphics.RectF;
 import android.graphics.Bitmap;
 import com.ajeetkumar.textdetectionusingmlkit.others.GraphicOverlay;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
+import java.text.DecimalFormat;
+import java.math.RoundingMode;
 
 /**
  * Graphic instance for rendering face bound box
@@ -28,9 +30,9 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 public class FaceGraphic extends GraphicOverlay.Graphic {
 
   private static final int FACE_COLOR = Color.YELLOW;
-  private static final int TEXT_COLOR = Color.GREEN;
+  private static final int TEXT_COLOR = Color.CYAN;
   private static final float STROKE_WIDTH = 7.0f;
-  private static final float TEXT_STROKE_WIDTH = 4.0f;
+  private static final float TEXT_STROKE_WIDTH = 6.0f;
 
   private final Paint rectPaint;
   private final Paint textPaint;
@@ -40,8 +42,13 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
   private final float age;
   private static final float TEXT_SIZE = 40.0f;
 
+  private DecimalFormat df;
+
   FaceGraphic(GraphicOverlay overlay, FirebaseVisionFace face, Bitmap bitmap, String gender, float age) {
     super(overlay);
+
+    df = new DecimalFormat("#.##"); // 2 decimal places
+    df.setRoundingMode(RoundingMode.CEILING);
 
     this.gender = gender;
     this.bitmap = bitmap;
@@ -80,7 +87,7 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
     // For debugging
     // canvas.drawBitmap(this.bitmap, this.bitmap.getScaledWidth(canvas), this.bitmap.getScaledHeight(canvas), rectPaint);
 
-    canvas.drawText(gender, rect.left, rect.top, textPaint);
-    canvas.drawText(String.valueOf(age), rect.left, rect.bottom, textPaint);
+    canvas.drawText(gender, rect.left + rect.width()/4,              rect.top + rect.height()/4, textPaint);
+    canvas.drawText(df.format(age), rect.left + rect.width()/4, rect.bottom - rect.height()/4, textPaint);
   }
 }
