@@ -6,3 +6,7 @@ Using pretrained age and gender models from [SSR-Net](https://github.com/shamang
 2. The faces are then cropped from the original image and scaled to 3 channel, 64x64 bitmaps
 3. These face bitmaps are fed into an age detection model and a separate gender detection model.
 4. The output age and gender is overlayed atop each face in the original image.
+
+## Example Usage
+
+![Example image](demo.jpg)
