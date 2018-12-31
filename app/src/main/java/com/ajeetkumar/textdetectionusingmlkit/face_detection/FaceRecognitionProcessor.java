@@ -67,6 +67,9 @@ public class FaceRecognitionProcessor {
 	private float[] floatValuesCarnie = new float[CARNIE_DIM*CARNIE_DIM*3];
 	private int[] intValuesCarnie = new int[CARNIE_DIM*CARNIE_DIM];
 	private final List<String> AGE_LIST = Arrays.asList("(0, 2)","(4, 6)","(8, 12)","(15, 20)","(25, 32)","(38, 43)","(48, 53)","(60, 100)");
+	private final int[] ageListMapping = {0, 0, 0, 0, 1, 2, 3, 4};
+	private final List<String> AGE_LIST_2 = Arrays.asList("(0, 20)","(20, 32)","(32, 43)","(43, 53)","(53, 100)");
+
 	private float[] genderOutputs = new float[1];
 	private float[] ageOutputs = new float[8];
 	private boolean frontFacingCamera;
@@ -216,7 +219,7 @@ public class FaceRecognitionProcessor {
 				maxAt = ageOutputs[i] > ageOutputs[maxAt] ? i : maxAt;
 			}
 
-			detectedAgeRange = AGE_LIST.get(maxAt);
+			detectedAgeRange = AGE_LIST_2.get(ageListMapping[maxAt]);
 
 			// add graphic overlay
 			GraphicOverlay.Graphic faceGraphic = new FaceGraphic(graphicOverlay, result, scaledBitmap, detectedGender, detectedAgeRange, frontFacingCamera);
