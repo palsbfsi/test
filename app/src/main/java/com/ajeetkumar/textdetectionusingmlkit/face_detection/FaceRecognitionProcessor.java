@@ -39,6 +39,7 @@ import com.google.firebase.ml.custom.*;
 import android.util.Log;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -60,11 +61,17 @@ public class FaceRecognitionProcessor {
 
 	private TensorFlowInferenceInterface genderIinferenceInterface;
 	private TensorFlowInferenceInterface ageInferenceInterface;
+	private final int CARNIE_DIM = 227;
 	private float[] floatValues = new float[64 * 64 * 3];
 	private int[] intValues = new int[64*64];
+	private float[] floatValuesCarnie = new float[CARNIE_DIM*CARNIE_DIM*3];
+	private int[] intValuesCarnie = new int[CARNIE_DIM*CARNIE_DIM];
+	private final List<String> AGE_LIST = Arrays.asList("(0, 2)","(4, 6)","(8, 12)","(15, 20)","(25, 32)","(38, 43)","(48, 53)","(60, 100)");
+	private float[] genderOutputs = new float[1];
+	private float[] ageOutputs = new float[8];
 	private boolean frontFacingCamera;
 	String detectedGender = "N/A";
-	float detectedAge = -1;
+	String detectedAgeRange = "N/A";
 
 
 	// Whether we should ignore process(). This is usually caused by feeding input data faster than
@@ -73,7 +80,7 @@ public class FaceRecognitionProcessor {
 
 	public FaceRecognitionProcessor(AssetManager assetManager, boolean frontFacingCamera) {
 		this.genderIinferenceInterface = new TensorFlowInferenceInterface(assetManager, "gender_model.pb");
-		this.ageInferenceInterface = new TensorFlowInferenceInterface(assetManager, "age_model.pb");
+		this.ageInferenceInterface = new TensorFlowInferenceInterface(assetManager, "rude_carnie_age_model.pb");
 		this.frontFacingCamera = frontFacingCamera;
 
 		detector = FirebaseVision.getInstance().getVisionFaceDetector();
@@ -158,7 +165,6 @@ public class FaceRecognitionProcessor {
 				floatValues[i * 3 + 0] = ((val & 0xFF));
 			}
 
-			float[] outputs = new float[1];
 			String inputName = "input_2";
 			String outputName = "pred/mul_33";
 
@@ -171,34 +177,49 @@ public class FaceRecognitionProcessor {
 			genderIinferenceInterface.run(new String[]{outputName});
 
 			// Copy the output Tensor back into the output array.
-			genderIinferenceInterface.fetch(outputName, outputs);
+			genderIinferenceInterface.fetch(outputName, genderOutputs);
 
-			if(outputs[0] <= 0.62) {
+			if(genderOutputs[0] <= 0.55) {
 				detectedGender = "F";
 			} else {
 				detectedGender = "M";
 			}
 
 			/*** Run Age Detection Model ***/
-			outputs = new float[1];
-			inputName = "input_1";
-			outputName = "pred_a/mul_33";
+			inputName = "Placeholder";
+			outputName = "output/output";
 
-			/*** Run Gender Detection Model First ***/
+			// Rude carnie expects different input dimensions
+			scaledBitmap = Bitmap.createScaledBitmap(resultBmp, CARNIE_DIM, CARNIE_DIM, false);
+
+			scaledBitmap.getPixels(intValuesCarnie, 0, scaledBitmap.getWidth(), 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight());
+			for (int i = 0; i < intValuesCarnie.length; ++i) {
+				final int val = intValuesCarnie[i];
+				// Rude Carnie is in RGB Format
+				floatValuesCarnie[i * 3 + 0] = (((val >> 16) & 0xFF));
+				floatValuesCarnie[i * 3 + 1] = (((val >> 8) & 0xFF));
+				floatValuesCarnie[i * 3 + 2] = ((val & 0xFF));
+			}
 
 			// Copy the input data into TensorFlow.
-			ageInferenceInterface.feed(inputName, floatValues, 1, 64, 64, 3);
+			ageInferenceInterface.feed(inputName, floatValuesCarnie, 1, CARNIE_DIM, CARNIE_DIM, 3);
 
 			// Run the inference call.
 			ageInferenceInterface.run(new String[]{outputName});
 
 			// Copy the output Tensor back into the output array.
-			ageInferenceInterface.fetch(outputName, outputs);
+			ageInferenceInterface.fetch(outputName, ageOutputs);
 
-			detectedAge = outputs[0];
+			int maxAt = 0;
+
+			for (int i = 0; i < ageOutputs.length; i++) {
+				maxAt = ageOutputs[i] > ageOutputs[maxAt] ? i : maxAt;
+			}
+
+			detectedAgeRange = AGE_LIST.get(maxAt);
 
 			// add graphic overlay
-			GraphicOverlay.Graphic faceGraphic = new FaceGraphic(graphicOverlay, result, scaledBitmap, detectedGender, detectedAge, frontFacingCamera);
+			GraphicOverlay.Graphic faceGraphic = new FaceGraphic(graphicOverlay, result, scaledBitmap, detectedGender, detectedAgeRange, frontFacingCamera);
 			graphicOverlay.add(faceGraphic);
 		}
 	}

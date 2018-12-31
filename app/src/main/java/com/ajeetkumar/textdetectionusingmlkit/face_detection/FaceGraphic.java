@@ -39,22 +39,19 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
   private final FirebaseVisionFace face;
   private final Bitmap bitmap;
   private final String gender;
-  private final float age;
+  private final String ageRange;
   private static final float TEXT_SIZE = 40.0f;
   private boolean frontFacingCamera;
 
   private DecimalFormat df;
 
-  FaceGraphic(GraphicOverlay overlay, FirebaseVisionFace face, Bitmap bitmap, String gender, float age, boolean frontFacingCamera) {
+  FaceGraphic(GraphicOverlay overlay, FirebaseVisionFace face, Bitmap bitmap, String gender, String ageRange, boolean frontFacingCamera) {
     super(overlay);
-
-    df = new DecimalFormat("#."); // 1 decimal place
-    df.setRoundingMode(RoundingMode.CEILING);
 
     this.gender = gender;
     this.bitmap = bitmap;
     this.face = face;
-    this.age = age;
+    this.ageRange = ageRange;
     this.frontFacingCamera = frontFacingCamera;
 
     rectPaint = new Paint();
@@ -90,9 +87,9 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
     // canvas.drawBitmap(this.bitmap, this.bitmap.getScaledWidth(canvas), this.bitmap.getScaledHeight(canvas), rectPaint);
 
     if(frontFacingCamera) {
-      canvas.drawText(df.format(age) + " " + gender, rect.right, rect.top, textPaint);
+      canvas.drawText(ageRange + " " + gender, rect.right, rect.top, textPaint);
     } else {
-      canvas.drawText(df.format(age) + " " + gender, rect.left, rect.top, textPaint);
+      canvas.drawText(ageRange + " " + gender, rect.left, rect.top, textPaint);
     }
   }
 }
